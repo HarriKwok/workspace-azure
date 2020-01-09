@@ -39,5 +39,5 @@ RUN ./install-helm.sh
 
 WORKDIR /root
 
-#docker build -t azure-container .
-#docker run -it --rm --name azure-container  -v "/d/Workspace":/root/Workspace azure-container zsh
+#docker build -t workspace-azure .
+#docker run -it --rm --name workspace-azure -v "/d/Workspace":/root/Workspace workspace-azure zsh
