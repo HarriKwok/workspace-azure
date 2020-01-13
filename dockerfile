@@ -2,7 +2,7 @@ FROM alpine:3.9
 
 #Install Stuff
 RUN apk update && \ 
-    apk add jq nano bash curl zsh git groff less terraform rsync openssh-keygen openssh-client openssl && \
+    apk add jq nano bash curl zsh git groff less rsync openssh-keygen openssh-client openssl && \
     apk add py-pip  && \
     apk add --virtual=buildpak gcc libffi-dev musl-dev openssl-dev python-dev make && \
     pip --no-cache-dir install -U pip && \
@@ -10,6 +10,10 @@ RUN apk update && \
     pip install kube-shell && \
     pip install azure-shell  && \
     apk del --purge buildpak
+
+RUN LATEST_URL=$(curl -sL https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | egrep -v 'rc|beta' | egrep 'linux.*amd64' |tail -1) && \
+    curl $LATEST_URL -o /tmp/tf.zip && \
+    unzip /tmp/tf.zip -d /usr/bin 
 
 #Config zshell
 RUN git clone https://github.com/robbyrussell/oh-my-zsh.git ~/.oh-my-zsh && \
@@ -40,4 +44,4 @@ RUN ./install-helm.sh
 WORKDIR /root
 
 #docker build -t workspace-azure .
-#docker run -it --rm --name workspace-azure -v "/d/Workspace":/root/Workspace workspace-azure zsh
+#docker run -it --rm --name workspace-azure -v "/c/Users/harri/workspaces":/root/Workspace workspace-azure zsh
