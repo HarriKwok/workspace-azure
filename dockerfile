@@ -11,8 +11,9 @@ RUN apk update && \
     pip install azure-shell  && \
     apk del --purge buildpak
 
-RUN LATEST_URL=$(curl -sL https://releases.hashicorp.com/terraform/index.json | jq -r '.versions[].builds[].url' | sort -t. -k 1,1n -k 2,2n -k 3,3n -k 4,4n | egrep -v 'rc|beta' | egrep 'linux.*amd64' |tail -1) && \
-    curl $LATEST_URL -o /tmp/tf.zip && \
+RUN LATEST_TFVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version') && \
+    CURL_URL="https://releases.hashicorp.com/terraform/${LATEST_TFVERSION}/terraform_${LATEST_TFVERSION}_linux_amd64.zip" && \
+    curl $CURL_URL -o /tmp/tf.zip && \
     unzip /tmp/tf.zip -d /usr/bin 
 
 #Config zshell
