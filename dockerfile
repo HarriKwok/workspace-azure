@@ -46,3 +46,4 @@ WORKDIR /root
 
 #docker build -t workspace-azure .
 #docker run -it --rm --name workspace-azure -v "/c/Users/harri/workspaces":/root/Workspace workspace-azure zsh
+#docker run -it --rm --name workspace-azure -v c:/workspace/:/root/workspace workspace-azure zsh 
