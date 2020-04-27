@@ -1,15 +1,16 @@
-FROM alpine:3.9
+FROM alpine:latest
 
 #Install Stuff
 RUN apk update && \ 
-    apk add jq nano bash curl zsh git groff less rsync openssh-keygen openssh-client openssl && \
-    apk add py-pip  && \
-    apk add --virtual=buildpak gcc libffi-dev musl-dev openssl-dev python-dev make && \
-    pip --no-cache-dir install -U pip && \
-    pip install azure-cli && \
-    pip install kube-shell && \
-    pip install azure-shell  && \
+    apk add jq nano bash curl zsh git groff less rsync openssh-keygen openssh-client openssl python3 && \
+    apk add --virtual=buildpak gcc libffi-dev musl-dev openssl-dev python3-dev make && \
+    python3 -m ensurepip && \
+    pip3 --no-cache-dir install -U pip && \
+    pip3 install azure-cli && \
+    pip3 install kube-shell && \
+    pip3 install azure-shell  && \
     apk del --purge buildpak
+    
 
 RUN LATEST_TFVERSION=$(curl -s https://checkpoint-api.hashicorp.com/v1/check/terraform | jq -r -M '.current_version') && \
     CURL_URL="https://releases.hashicorp.com/terraform/${LATEST_TFVERSION}/terraform_${LATEST_TFVERSION}_linux_amd64.zip" && \
@@ -38,9 +39,14 @@ RUN chmod +x ./kubectl
 RUN mv ./kubectl /usr/local/bin
 
 #install helm
-RUN curl https://raw.githubusercontent.com/kubernetes/helm/master/scripts/get > ./install-helm.sh
-RUN chmod u+x ./install-helm.sh
-RUN ./install-helm.sh
+RUN curl -fsSL -o get_helm.sh https://raw.githubusercontent.com/helm/helm/master/scripts/get-helm-3
+RUN chmod 700 get_helm.sh
+RUN ./get_helm.sh
+
+#install bash completion for kubectl autocomplete
+RUN apk add bash-completion && \
+    source <(kubectl completion bash) && \
+    echo "source <(kubectl completion bash)" >> ~/.bashrc
 
 WORKDIR /root
 
