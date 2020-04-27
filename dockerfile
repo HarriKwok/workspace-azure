@@ -45,8 +45,7 @@ RUN ./get_helm.sh
 
 #install bash completion for kubectl autocomplete
 RUN apk add bash-completion && \
-    source <(kubectl completion bash) && \
-    echo "source <(kubectl completion bash)" >> ~/.bashrc
+    echo "source < $(kubectl completion bash)" >> ~/.bashrc
 
 WORKDIR /root
 
